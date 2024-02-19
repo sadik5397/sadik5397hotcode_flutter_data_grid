@@ -91,11 +91,11 @@ class EmployeeDataSource extends DataGridSource {
           cells: row.getCells().map((cell) {
         switch (cell.columnName) {
           case "id":
-            return Center(child: Text(cell.value.toString()));
+            return Center(child: SelectableText(cell.value.toString()));
           case "name":
-            return Center(child: Text(cell.value.toString()));
+            return Center(child: SelectableText(cell.value.toString()));
           default:
-            return Center(child: Text(cell.value.toString()));
+            return Center(child: SelectableText(cell.value.toString()));
         }
       }).toList());
 }
