@@ -67,12 +67,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class MyEmployee {
-  dynamic id, name, designation, salary;
-
-  MyEmployee(this.id, this.name, this.designation, this.salary);
-}
-
 class EmployeeDataSource extends DataGridSource {
   List<DataGridRow> tableRows = [];
 
