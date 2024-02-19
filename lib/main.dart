@@ -29,10 +29,11 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late EmployeeDataSource employeeDataSource;
   final GlobalKey<SfDataGridState> _key = GlobalKey<SfDataGridState>();
+  final DataGridController _dataGridController = DataGridController();
 
   List<Map<String, String>> columns = [
     {"key": "id", "value": "ID"},
-    {"key": "name", "value": "Name"},
+    {"key": "name", "value": "Mame"},
     {"key": "designation", "value": "Designation"},
     {"key": "salary", "value": "Salary"},
   ];
@@ -50,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
     {"id": 10010, "name": "Grimes", "designation": "Developer", "salary": 15000}
   ];
 
-  Future<void> _exportDataGridToExcel() async {
+  Future<void> exportDataGridToExcel() async {
     final Workbook workbook = _key.currentState!.exportToExcelWorkbook();
 
     final List<int> bytes = workbook.saveAsStream();
@@ -59,12 +60,22 @@ class _MyHomePageState extends State<MyHomePage> {
     await helper.saveAndLaunchFile(bytes, 'DataGrid.xlsx');
   }
 
-  Future<void> _exportDataGridToPdf() async {
+  Future<void> exportDataGridToPdf() async {
     final PdfDocument document = _key.currentState!.exportToPdfDocument(fitAllColumnsInOnePage: true);
 
     final List<int> bytes = document.saveSync();
     await helper.saveAndLaunchFile(bytes, 'DataGrid.pdf');
     document.dispose();
+  }
+
+  Future<void> logSelectedItems() async {
+    List selectedRows = _dataGridController.selectedRows;
+    var selected = selectedRows.map((row) {
+      List keys = row.getCells().map((cell) => cell.columnName).toList();
+      List values = row.getCells().map((cell) => cell.value).toList();
+      return Map.fromIterables(keys, values);
+    }).toList();
+    print(selected);
   }
 
   @override
@@ -79,13 +90,19 @@ class _MyHomePageState extends State<MyHomePage> {
         appBar: AppBar(
           title: const Text('Syncfusion Flutter DataGrid'),
           actions: [
-            MaterialButton(color: Colors.blue, onPressed: _exportDataGridToExcel, child: const Center(child: Text('Export to Excel', style: TextStyle(color: Colors.white)))),
+            MaterialButton(color: Colors.blue, onPressed: exportDataGridToExcel, child: const Center(child: Text('Export to Excel', style: TextStyle(color: Colors.white)))),
             const Padding(padding: EdgeInsets.all(20)),
-            MaterialButton(color: Colors.blue, onPressed: _exportDataGridToPdf, child: const Center(child: Text('Export to PDF', style: TextStyle(color: Colors.white)))),
+            MaterialButton(color: Colors.blue, onPressed: exportDataGridToPdf, child: const Center(child: Text('Export to PDF', style: TextStyle(color: Colors.white)))),
+            const Padding(padding: EdgeInsets.all(20)),
+            MaterialButton(color: Colors.blue, onPressed: logSelectedItems, child: const Center(child: Text('Log Selected', style: TextStyle(color: Colors.white)))),
           ],
         ),
         body: SfDataGrid(
+            showCheckboxColumn: true,
+            selectionMode: SelectionMode.multiple,
+            controller: _dataGridController,
             key: _key,
+            onCellTap: (data) => print(apiResult[data.rowColumnIndex.rowIndex - 1][data.column.columnName]),
             source: employeeDataSource,
             columnWidthMode: ColumnWidthMode.fill,
             columns: List.generate(
@@ -122,11 +139,11 @@ class EmployeeDataSource extends DataGridSource {
           cells: row.getCells().map((cell) {
         switch (cell.columnName) {
           case "id":
-            return Center(child: SelectableText(cell.value.toString()));
+            return Center(child: Text(cell.value.toString()));
           case "name":
-            return Center(child: SelectableText(cell.value.toString()));
+            return Center(child: Text(cell.value.toString()));
           default:
-            return Center(child: SelectableText(cell.value.toString()));
+            return Center(child: Text(cell.value.toString()));
         }
       }).toList());
 }
