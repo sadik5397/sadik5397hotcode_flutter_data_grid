@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
+// External package imports
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
+import 'package:syncfusion_flutter_datagrid_export/export.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
+import 'package:syncfusion_flutter_xlsio/xlsio.dart' hide Column, Row;
+
+// Platform specific import
+import 'save_file_export/save_file_mobile.dart' if (dart.library.html) 'save_file_export/save_file_web.dart' as helper;
 
 void main() => runApp(const MyApp());
 
@@ -21,6 +28,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late EmployeeDataSource employeeDataSource;
+  final GlobalKey<SfDataGridState> _key = GlobalKey<SfDataGridState>();
 
   List<Map<String, String>> columns = [
     {"key": "id", "value": "ID"},
@@ -42,6 +50,23 @@ class _MyHomePageState extends State<MyHomePage> {
     {"id": 10010, "name": "Grimes", "designation": "Developer", "salary": 15000}
   ];
 
+  Future<void> _exportDataGridToExcel() async {
+    final Workbook workbook = _key.currentState!.exportToExcelWorkbook();
+
+    final List<int> bytes = workbook.saveAsStream();
+    workbook.dispose();
+
+    await helper.saveAndLaunchFile(bytes, 'DataGrid.xlsx');
+  }
+
+  Future<void> _exportDataGridToPdf() async {
+    final PdfDocument document = _key.currentState!.exportToPdfDocument(fitAllColumnsInOnePage: true);
+
+    final List<int> bytes = document.saveSync();
+    await helper.saveAndLaunchFile(bytes, 'DataGrid.pdf');
+    document.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -53,8 +78,14 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Syncfusion Flutter DataGrid'),
+          actions: [
+            MaterialButton(color: Colors.blue, onPressed: _exportDataGridToExcel, child: const Center(child: Text('Export to Excel', style: TextStyle(color: Colors.white)))),
+            const Padding(padding: EdgeInsets.all(20)),
+            MaterialButton(color: Colors.blue, onPressed: _exportDataGridToPdf, child: const Center(child: Text('Export to PDF', style: TextStyle(color: Colors.white)))),
+          ],
         ),
         body: SfDataGrid(
+            key: _key,
             source: employeeDataSource,
             columnWidthMode: ColumnWidthMode.fill,
             columns: List.generate(
