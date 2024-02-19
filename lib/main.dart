@@ -1,125 +1,107 @@
 import 'package:flutter/material.dart';
+import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
+    return MaterialApp(title: 'sadik5397 Data Grid', debugShowCheckedModeBanner: false, theme: ThemeData(useMaterial3: true), home: const MyHomePage());
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  late EmployeeDataSource employeeDataSource;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  List<Map<String, String>> columns = [
+    {"key": "id", "value": "ID"},
+    {"key": "name", "value": "Name"},
+    {"key": "designation", "value": "Designation"},
+    {"key": "salary", "value": "Salary"},
+  ];
+
+  List<Map<String, dynamic>> apiResult = [
+    {"id": 10001, "name": "James", "designation": "Project Lead", "salary": 20000},
+    {"id": 10002, "name": "Kathryn", "designation": "Manager", "salary": 30000},
+    {"id": 10003, "name": "Lara", "designation": "Developer", "salary": 15000},
+    {"id": 10004, "name": "Michael", "designation": "Designer", "salary": 15000},
+    {"id": 10005, "name": "Martin", "designation": "Developer", "salary": 15000},
+    {"id": 10006, "name": "Newberry", "designation": "Developer", "salary": 15000},
+    {"id": 10007, "name": "Balnc", "designation": "Developer", "salary": 15000},
+    {"id": 10008, "name": "Perry", "designation": "Developer", "salary": 15000},
+    {"id": 10009, "name": "Gable", "designation": "Developer", "salary": 15000},
+    {"id": 10010, "name": "Grimes", "designation": "Developer", "salary": 15000}
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    employeeDataSource = EmployeeDataSource(columns, apiResult); //API Call (apiResult)
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+        appBar: AppBar(
+          title: const Text('Syncfusion Flutter DataGrid'),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
+        body: SfDataGrid(
+            source: employeeDataSource,
+            columnWidthMode: ColumnWidthMode.fill,
+            columns: List.generate(
+                columns.length,
+                (index) => GridColumn(
+                      columnName: columns[index]["key"] ?? "",
+                      autoFitPadding: const EdgeInsets.all(8.0),
+                      label: Center(child: Text(columns[index]["value"] ?? "", overflow: TextOverflow.ellipsis)),
+                    ))));
   }
+}
+
+class MyEmployee {
+  dynamic id, name, designation, salary;
+
+  MyEmployee(this.id, this.name, this.designation, this.salary);
+}
+
+class EmployeeDataSource extends DataGridSource {
+  List<DataGridRow> tableRows = [];
+
+  EmployeeDataSource(List columns, List data) {
+    tableRows = List.generate(
+        data.length,
+        (i) => DataGridRow(cells: List.generate(columns.length, (j) => DataGridCell(columnName: columns[j]["key"], value: data[i][columns[j]["key"]]))
+            // cells: [
+            //   DataGridCell(columnName: 'id', value: result[i]["id"]),
+            //   DataGridCell(columnName: 'name', value: result[i]["name"]),
+            //   DataGridCell(columnName: 'designation', value: result[i]["designation"]),
+            //   DataGridCell(columnName: 'salary', value: result[i]["salary"]),
+            // ],
+            ));
+  }
+
+  @override
+  List<DataGridRow> get rows => tableRows;
+
+  @override
+  DataGridRowAdapter buildRow(DataGridRow row) => DataGridRowAdapter(
+          cells: row.getCells().map((cell) {
+        switch (cell.columnName) {
+          case "id":
+            return Center(child: Text(cell.value.toString()));
+          case "name":
+            return Center(child: Text(cell.value.toString()));
+          default:
+            return Center(child: Text(cell.value.toString()));
+        }
+      }).toList());
 }
