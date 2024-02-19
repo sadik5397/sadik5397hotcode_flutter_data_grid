@@ -29,7 +29,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late EmployeeDataSource employeeDataSource;
   final GlobalKey<SfDataGridState> _key = GlobalKey<SfDataGridState>();
-  final DataGridController _dataGridController = DataGridController();
+  final DataGridController dataGridController = DataGridController();
 
   List<Map<String, String>> columns = [
     {"key": "id", "value": "ID"},
@@ -69,7 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> logSelectedItems() async {
-    List selectedRows = _dataGridController.selectedRows;
+    List selectedRows = dataGridController.selectedRows;
     var selected = selectedRows.map((row) {
       List keys = row.getCells().map((cell) => cell.columnName).toList();
       List values = row.getCells().map((cell) => cell.value).toList();
@@ -99,8 +99,12 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         body: SfDataGrid(
             showCheckboxColumn: true,
+            allowSorting: true,
+            allowFiltering: true,
             selectionMode: SelectionMode.multiple,
-            controller: _dataGridController,
+            controller: dataGridController,
+            gridLinesVisibility: GridLinesVisibility.both,
+            headerGridLinesVisibility: GridLinesVisibility.both,
             key: _key,
             onCellTap: (data) => print(apiResult[data.rowColumnIndex.rowIndex - 1][data.column.columnName]),
             source: employeeDataSource,
