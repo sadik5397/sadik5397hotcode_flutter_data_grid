@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:syncfusion_flutter_core/theme.dart';
 // External package imports
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:syncfusion_flutter_datagrid_export/export.dart';
@@ -37,6 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
     {"key": "name", "value": "Mame"},
     {"key": "designation", "value": "Designation"},
     {"key": "salary", "value": "Salary"},
+    {"key": "action", "value": "Action"},
   ];
 
   List<Map<String, dynamic>> apiResult = [
@@ -50,7 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
     {"id": 10018, "name": "Sophia", "designation": "Developer", "salary": 15000},
     {"id": 10019, "name": "Benjamin", "designation": "Developer", "salary": 15000},
     {"id": 10020, "name": "Mia", "designation": "Developer", "salary": 15000},
-    {"id": 10021, "name": "Elijah", "designation": "Developer", "salary": 15000},
+    {"id": 10021, "name": "Elijah Elijah Elijah Elijah Elijahlijah Elijah Elijah Elijahlijah Elijah Elijah Elijahlijah Elijah Elijah Elijah", "designation": "Developer", "salary": 15000},
     {"id": 10022, "name": "Harper", "designation": "Developer", "salary": 15000},
     {"id": 10023, "name": "Lucas", "designation": "Designer", "salary": 15000},
     {"id": 10024, "name": "Evelyn", "designation": "Developer", "salary": 15000},
@@ -179,34 +181,38 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: const Text('Syncfusion Flutter DataGrid'), actions: [
-          MaterialButton(color: Colors.blue, onPressed: exportDataGridToExcel, child: Text('Export to Excel', style: TextStyle(color: Colors.white))),
+          MaterialButton(color: Colors.blue, onPressed: exportDataGridToExcel, child: const Text('Export to Excel', style: TextStyle(color: Colors.white))),
           const Padding(padding: EdgeInsets.all(20)),
-          MaterialButton(color: Colors.blue, onPressed: exportDataGridToPdf, child: Text('Export to PDF', style: TextStyle(color: Colors.white))),
+          MaterialButton(color: Colors.blue, onPressed: exportDataGridToPdf, child: const Text('Export to PDF', style: TextStyle(color: Colors.white))),
           const Padding(padding: EdgeInsets.all(20)),
-          MaterialButton(color: Colors.blue, onPressed: logSelectedItems, child: Text('Log Selected', style: TextStyle(color: Colors.white)))
+          MaterialButton(color: Colors.blue, onPressed: logSelectedItems, child: const Text('Log Selected', style: TextStyle(color: Colors.white)))
         ]),
         body: Column(children: <Widget>[
           Expanded(
-              child: SfDataGrid(
-                  columnWidthMode: ColumnWidthMode.fill,
-                  showCheckboxColumn: true,
-                  allowSorting: true,
-                  allowFiltering: true,
-                  selectionMode: SelectionMode.multiple,
-                  controller: dataGridController,
-                  gridLinesVisibility: GridLinesVisibility.both,
-                  headerGridLinesVisibility: GridLinesVisibility.both,
-                  rowsPerPage: rowsPerPage,
-                  key: _key,
-                  // onCellTap: (data) => print(apiResult[data.rowColumnIndex.rowIndex - 1][data.column.columnName]),
-                  source: employeeDataSource,
-                  columns: List.generate(
-                      columns.length,
-                      (index) => GridColumn(
-                            columnName: columns[index]["key"] ?? "",
-                            autoFitPadding: const EdgeInsets.all(8.0),
-                            label: Center(child: Text(columns[index]["value"] ?? "", overflow: TextOverflow.ellipsis)),
-                          )))),
+              child: SfDataGridTheme(
+            data: SfDataGridThemeData(headerColor: Colors.blueAccent.shade100.withOpacity(.25)),
+            child: SfDataGrid(
+                columnWidthMode: ColumnWidthMode.fill,
+                showCheckboxColumn: true,
+                allowSorting: true,
+                allowFiltering: true,
+                selectionMode: SelectionMode.multiple,
+                controller: dataGridController,
+                gridLinesVisibility: GridLinesVisibility.both,
+                headerGridLinesVisibility: GridLinesVisibility.both,
+                rowsPerPage: rowsPerPage,
+                key: _key,
+                showSortNumbers: true,
+                // onCellTap: (data) => print(apiResult[data.rowColumnIndex.rowIndex - 1][data.column.columnName]),
+                source: employeeDataSource,
+                columns: List.generate(
+                    columns.length,
+                    (index) => GridColumn(
+                          columnName: columns[index]["key"] ?? "",
+                          autoFitPadding: const EdgeInsets.all(8.0),
+                          label: Center(child: Text(columns[index]["value"] ?? "", style: const TextStyle(fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis)),
+                        ))),
+          )),
           SfDataPager(
               delegate: employeeDataSource,
               availableRowsPerPage: List.generate(6, (index) => (index + 1) * 10),
@@ -244,6 +250,14 @@ class EmployeeDataSource extends DataGridSource {
           return Center(child: Text(cell.value.toString()));
         case "name":
           return Center(child: Text(cell.value.toString()));
+        case "action":
+          return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Wrap(alignment: WrapAlignment.end, children: [
+                IconButton(onPressed: () {}, icon: const Icon(Icons.edit), color: Colors.blueAccent),
+                IconButton(onPressed: () {}, icon: const Icon(Icons.delete), color: Colors.redAccent),
+                IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert_rounded), color: Colors.purpleAccent)
+              ]));
         default:
           return Center(child: Text(cell.value.toString()));
       }
